@@ -22,7 +22,7 @@ const SearchPopup = (props) => {
       ...currentFilters,
       ["search_"+searchedCol]: searchValue,
     });
-    document.getElementById(searchedCol + "_btn").style.color = "#2C2799";
+    document.getElementById(searchedCol + "_btn").style.color = "#008080";
     props.handleClose();
   };
 

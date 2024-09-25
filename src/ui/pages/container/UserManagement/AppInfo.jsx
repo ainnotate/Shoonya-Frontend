@@ -20,30 +20,20 @@ export default function AppInfo() {
         navigate(path);
       }
   return (
-    <div>
-        <ThemeProvider theme={themeDefault}>
+    <div style={{alignItems: 'center', justifyContent: 'center'}}>
     
+    <img src={"haidata_logo_grey.png"} alt="logo" style={{alignItems: 'center', width:"70%", justifyContent: 'center', marginTop: '10%', marginLeft: '12%'}} />  
     <Grid container>
       
-    <Hidden only="xs">
-   <Grid item xs={10} sm={10} md={10} lg={10} xl={10}  >
-   
-        <img src={"Shoonya_Logo.png"} alt="logo" style={{width:"85px",margin: "10% 0px 0% 35px",borderRadius:"50%"}} />      </Grid> </Hidden>
-        
          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  >
-         <Typography  variant={"h2"} className={classes.title}  style={{ margin: "10% 294px 10% 39px"}} onClick={routeChange} >Shoonya</Typography>
-            </Grid>
+         <Typography  variant={"h2"} className={classes.title}  style={{ margin: "10% 294px 10% 39px"}} onClick={routeChange} >Data Annotation Platform</Typography>
+         </Grid>
          <Hidden only="xs">
          <Typography variant={"body1"} className={classes.body} style={{ margin: "20px 0px 50px 39px",}}>
          {translate("label.shoonyaInfo")}
          </Typography>
          </Hidden>
-       
-    
-  </Grid>
-  </ThemeProvider>
-
-
+    </Grid>
     </div>
   )
 }

@@ -181,7 +181,7 @@ function WorkspaceSetting(props) {
         mt={2}
       >
         <CustomButton
-      sx={{backgroundColor : "#2C2799", "&:hover" : {backgroundColor : "rgba(0, 0, 0, .85)",}}} 
+      sx={{backgroundColor : "#008080", "&:hover" : {backgroundColor : "rgba(0, 0, 0, .85)",}}} 
       label={"Download All Projects"}
       className={classes.settingsButton}
         variant="contained"

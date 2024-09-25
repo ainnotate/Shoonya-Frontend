@@ -36,7 +36,7 @@ const AudioTranscriptionLandingStyle = makeStyles({
   },
 
   settingsIconBtn: {
-    backgroundColor: "#2C2799",
+    backgroundColor: "#008080",
     borderRadius: "50%",
     color: "#fff",
     margin: "auto",
@@ -423,7 +423,7 @@ const AudioTranscriptionLandingStyle = makeStyles({
   },
 
   rightPanelBtnGrp: {
-    backgroundColor: "#2C2799",
+    backgroundColor: "#008080",
     borderRadius: "50%",
     color: "#fff",
     marginX: "5px",
@@ -474,7 +474,7 @@ const AudioTranscriptionLandingStyle = makeStyles({
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
     borderColor: "rgba(0, 0, 0, 0.23)",
-    outlineColor: "#2C2799",
+    outlineColor: "#008080",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
     width: "100%",
@@ -515,7 +515,7 @@ const AudioTranscriptionLandingStyle = makeStyles({
     color: "rgba(0, 0, 0, 0.87)",
     borderRadius: "4px",
     borderColor: "#616A6B",
-    outlineColor: "#2C2799",
+    outlineColor: "#008080",
     resize: "none",
     fontFamily: "Roboto, sans-serif",
   },

@@ -229,7 +229,7 @@ const Login = () => {
     );
   };
   const renderCardContent = () => (
-    <CustomCard title={"Sign in to Shoonya"} cardContent={TextFields()}>
+    <CustomCard title={"Sign-In"} cardContent={TextFields()}>
       <Grid container spacing={2} style={{ width: "100%" ,cursor: "pointer"}}>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} textAlign={"right"}>
           <Link onClick={() => navigate("/forgot-password")}>
@@ -238,7 +238,7 @@ const Login = () => {
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <CustomButton style={{
-            backgroundColor: "#2C2799",
+            backgroundColor: "#008080",
             borderRadius: "20px",
             color: "#FFFFFF"
           }} fullWidth onClick={createToken} label={"Login"} />

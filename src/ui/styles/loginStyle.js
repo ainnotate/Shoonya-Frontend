@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles';
 
 const LoginStyle = makeStyles({
     appInfo: {
-        background: "rgba(44, 39, 153, 1)",
+        background: "rgba(0, 128, 128, 1)",
         minHeight: "100vh",
         color:"white",
         // color: theme.palette.primary.contrastText,
@@ -84,7 +84,7 @@ const LoginStyle = makeStyles({
       link: {
         cursor: "pointer",
         width: "100%",
-        color: "#2C2799",
+        color: "#008080",
         float: "right",
         fontSize: "0.875rem",
         fontFamily: '"lato" ,sans-serif',

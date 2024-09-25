@@ -693,7 +693,7 @@ const TranscriptionRightPanel = ({
                     }}
                   >
                     <Box className={classes.topBox} style={{paddingLeft: "16px", paddingRight: "16px", paddingTop: "14px", paddingBottom: "10px"}}>
-                      <div style={{display:"block", height:"30px", width:"90px", lineHeight:"30px", borderRadius:"50%", fontSize:"medium", backgroundColor:"#2C2799", color:"white", marginRight:"20px", marginLeft:"5px"}}>
+                      <div style={{display:"block", height:"30px", width:"90px", lineHeight:"30px", borderRadius:"50%", fontSize:"medium", backgroundColor:"#008080", color:"white", marginRight:"20px", marginLeft:"5px"}}>
                         {index+1}
                       </div>
 

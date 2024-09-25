@@ -6,7 +6,7 @@ const localisation = {
   newPassword:"Enter your New Password*",
   currentPassword:"Enter your Current Password*",
   "label.shoonyaInfo":
-    "Shoonya is an open source platform to annotate and label data at scale, built with a vision to enhance digital presence of under-represented languages in India.",
+    "Audio and Text annotation platform, built for scale - based on Shoonya. With support for auto-transcription for major Indic languages.",
     "button.clearAll" : "Clear All",
     "button.clear" : "Clear",
     "button.Filter" : "Filter",

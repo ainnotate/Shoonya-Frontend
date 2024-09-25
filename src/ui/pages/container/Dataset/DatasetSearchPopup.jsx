@@ -31,7 +31,7 @@ const DatasetSearchPopup = (props) => {
  
 
   const handleSearchSubmit = async(e) => {
-    document.getElementById(searchedCol + "_btn").style.color = "#2C2799";
+    document.getElementById(searchedCol + "_btn").style.color = "#008080";
     props.handleClose();
     updateFilters({
       ...currentFilters,
