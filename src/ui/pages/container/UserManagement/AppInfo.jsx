@@ -22,15 +22,18 @@ export default function AppInfo() {
   return (
     <div style={{alignItems: 'center', justifyContent: 'center'}}>
     
-    <img src={"haidata_logo_grey.png"} alt="logo" style={{alignItems: 'center', width:"70%", justifyContent: 'center', marginTop: '10%', marginLeft: '12%'}} />  
+    <img src={"dlstudio_logo.png"} alt="logo" style={{alignItems: 'center', width:"60%", justifyContent: 'center', marginTop: '10%', marginLeft: '12%'}} />  
     <Grid container>
       
          <Grid item xs={12} sm={12} md={12} lg={12} xl={12}  >
-         <Typography  variant={"h2"} className={classes.title}  style={{ margin: "10% 294px 10% 39px"}} onClick={routeChange} >Data Annotation Platform</Typography>
+         <Typography  variant={"h2"} className={classes.title}  style={{ margin: "10% 294px 10% 39px"}} onClick={routeChange} >Data Labeling Studio</Typography>
          </Grid>
          <Hidden only="xs">
          <Typography variant={"body1"} className={classes.body} style={{ margin: "20px 0px 50px 39px",}}>
          {translate("label.shoonyaInfo")}
+         </Typography>
+         <Typography variant={"body1"} className={classes.body} style={{ margin: "20px 0px 50px 39px",}}>
+         info@haidata.ai
          </Typography>
          </Hidden>
     </Grid>

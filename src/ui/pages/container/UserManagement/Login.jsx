@@ -229,7 +229,7 @@ const Login = () => {
     );
   };
   const renderCardContent = () => (
-    <CustomCard title={"Sign-In"} cardContent={TextFields()}>
+    <CustomCard title={"Sign in"} cardContent={TextFields()}>
       <Grid container spacing={2} style={{ width: "100%" ,cursor: "pointer"}}>
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12} textAlign={"right"}>
           <Link onClick={() => navigate("/forgot-password")}>
