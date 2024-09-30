@@ -34,7 +34,7 @@ import CustomButton from "../common/Button";
 import headerStyle from "../../../styles/header";
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import NotificationPatchAPI from "../../../../redux/actions/api/Notification/NotificationPatchApi";
-import Shoonya_Logo from "../../../../assets/Shoonya_Logo.png";
+import Shoonya_Logo from "../../../../assets/dlstudio_logo.png";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import APITransport from "../../../../redux/actions/apitransport/apitransport";
@@ -819,16 +819,6 @@ console.log(unseenNotifications,'uuu');
                     sx={{ marginTop: "5%" }}
                   />
                 </Link>
-                <Typography
-                  variant="h4"
-                  className={classes.headerTitle}
-                  sx={{
-                    fontSize: "28px",
-                    fontWeight: "lighter",
-                  }}
-                >
-                  Shoonya
-                </Typography>
               </Grid>
 
               {/* <Grid

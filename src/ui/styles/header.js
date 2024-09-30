@@ -43,9 +43,7 @@ const headerStyle = makeStyles({
 
     },
     headerLogo: {
-        height: "35px", 
-        width: "40px", 
-        borderRadius:"50%"
+        width: "72%", 
     },
     headerTitle:{
         color:"#373939",

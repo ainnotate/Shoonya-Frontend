@@ -1,8 +1,8 @@
 const configs = {
-  BASE_URL: "https://shoonya-api.haidata.ai",
+  BASE_URL: "https://dlstudio-api.haidata.ai",
   BASE_URL_AUTO: process.env.REACT_APP_APIGW_BASE_URL
     ? process.env.REACT_APP_APIGW_BASE_URL
-        :"https://shoonya-api.haidata.ai"
+        :"https://dlstudio-api.haidata.ai"
 };
 
 export default configs;
