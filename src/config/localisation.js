@@ -6,7 +6,7 @@ const localisation = {
   newPassword:"Enter your New Password*",
   currentPassword:"Enter your Current Password*",
   "label.shoonyaInfo":
-    "Data labeling platform, built for scale - based on Shoonya Opensource project. With support for auto-transcription of various international languages.",
+    "Data labeling platform, built for scale. With support for auto-transcription of various international languages.",
     "button.clearAll" : "Clear All",
     "button.clear" : "Clear",
     "button.Filter" : "Filter",
