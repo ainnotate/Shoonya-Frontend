@@ -34,14 +34,28 @@ import CustomizedSnackbars from "../../component/common/Snackbar";
 import C from "../../../../redux/constants";
 import {
   setSubtitles,
+  setCurrentIndex, // Add this import if it exists, or we'll need to create the action
 } from "../../../../redux/actions/Common";
 
 // Add this style to the head to ensure context menu is always on top
 const styleTag = document.createElement('style');
 styleTag.innerHTML = `
   .react-contextmenu {
-    z-index: 9999 !important;
+    z-index: 99999 !important;
     position: fixed !important;
+  }
+  
+  /* Ensure menu items are opaque */
+  .react-contextmenu-item {
+    background-color: white !important;
+    opacity: 1 !important;
+  }
+  
+  /* Force visibility */
+  .react-contextmenu--visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    visibility: visible !important;
   }
 `;
 document.head.appendChild(styleTag);
@@ -497,13 +511,16 @@ export default memo(
       return (
         <ContextMenu id={id} className={classes.menuItemNav} style={{
           backgroundColor: 'white',
-          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
           border: '1px solid #ccc',
           borderRadius: '4px',
           padding: '5px 0',
           minWidth: '200px',
           zIndex: 99999, // Extremely high z-index to ensure it's on top
-          position: 'relative', // Ensure z-index works properly
+          position: 'fixed', // Use fixed instead of relative
+          opacity: 1,
+          visibility: 'visible',
+          pointerEvents: 'auto',
         }}>
           <MenuItem
             className={classes.menuItem}
@@ -525,9 +542,8 @@ export default memo(
               opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
               padding: '8px 15px',
               cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
-              hover: {
-                backgroundColor: '#f5f5f5'
-              }
+              backgroundColor: 'white',
+              color: 'black',
             }}
           >
             Delete Subtitle
@@ -553,7 +569,9 @@ export default memo(
               style={{ 
                 opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
                 padding: '8px 15px',
-                cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer'
+                cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
+                backgroundColor: 'white',
+                color: 'black',
               }}
             >
               Merge Next
@@ -579,7 +597,9 @@ export default memo(
             style={{ 
               opacity: !lastSub ? 0.5 : 1,
               padding: '8px 15px',
-              cursor: !lastSub ? 'not-allowed' : 'pointer'
+              cursor: !lastSub ? 'not-allowed' : 'pointer',
+              backgroundColor: 'white',
+              color: 'black',
             }}
           >
             Play Segment
@@ -605,7 +625,9 @@ export default memo(
               marginTop: '5px',
               paddingTop: '10px',
               backgroundColor: allowOverlap ? 'rgba(0, 153, 51, 0.1)' : 'rgba(153, 51, 0, 0.1)',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              opacity: 1,
+              color: 'black',
             }}
           >
             {allowOverlap ? "Disable Segment Overlap" : "Enable Segment Overlap"}
@@ -630,7 +652,7 @@ export default memo(
     const attributes = {
       className: classes.contextMenu,
       style: {
-        zIndex: 9999 // Ensure high z-index for the context menu trigger as well
+        zIndex: 99999 // Ensure extremely high z-index for the context menu trigger as well
       }
     };
 
@@ -767,6 +789,25 @@ export default memo(
                     undefined,
                   // Add z-index to handle overlapping segments
                   zIndex: key === currentIndex ? 10 : 1,
+                }}
+                onClick={(e) => {
+                    console.log('SANNN .... 111')
+                  // Only respond to direct clicks, not from child elements
+                    // Find the index in the original subtitles array
+                    const originalIndex = result.indexOf(sub);
+                    console.log('SANNN .... ', originalIndex)
+                    if (originalIndex !== -1) {
+                      // Use dispatch to update the global state for currentIndex
+                      dispatch(setCurrentIndex(originalIndex, C.CURRENT_INDEX)); // Use your actual action and constant
+                      
+/*                      // Optional: Scroll to the corresponding subtitle in the right panel
+                      setTimeout(() => {
+                        const subtitleScrollEle = document.getElementById("subTitleContainer");
+                        subtitleScrollEle
+                          ?.querySelector(`#sub_${originalIndex}`)
+                          ?.scrollIntoView({ block: "center", behavior: "smooth" });
+                      }, 50);
+*/                    }
                 }}
                 onDoubleClick={() => handleDoubleClick(sub)}
               >

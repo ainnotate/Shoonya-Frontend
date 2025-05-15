@@ -3,6 +3,7 @@ import C from "../../constants";
 const initialState = {
   player: null,
   subtitles: [],
+  currentIndex: 0,
 };
 
 const reducer = (state = initialState, action) => {
@@ -25,7 +26,7 @@ const reducer = (state = initialState, action) => {
         ...state,
         currentIndex: action.payload,
       };
-          
+
     default:
       return {
         ...state,

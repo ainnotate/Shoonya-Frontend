@@ -37,7 +37,7 @@ import Spinner from "../../component/common/Spinner";
 import Sub from "../../../../utils/Sub";
 import C from "../../../../redux/constants";
 import SaveTranscriptAPI from "../../../../redux/actions/CL-Transcription/SaveTranscript";
-import { setSubtitles } from "../../../../redux/actions/Common";
+import { setSubtitles, setCurrentIndex } from "../../../../redux/actions/Common";
 import PatchAnnotationAPI from "../../../../redux/actions/CL-Transcription/patchAnnotation";
 import CustomizedSnackbars from "../../component/common/Snackbar";
 import GetNextProjectAPI from "../../../../redux/actions/CL-Transcription/GetNextProject";
@@ -61,7 +61,8 @@ const AudioTranscriptionLandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(-1);
+  //const [currentIndex, setCurrentIndex] = useState(-1); 
+  const currentIndex = useSelector((state) => state.commonReducer.currentIndex);
   const [currentSubs, setCurrentSubs] = useState();
   const [loadtime, setloadtime] = useState(new Date());
   const [textBox, settextBox] = useState("");
@@ -511,7 +512,9 @@ const AudioTranscriptionLandingPage = () => {
     const currentIndex = result?.findIndex(
       (item) => item?.startTime <= currentTime && item?.endTime > currentTime
     );
-    setCurrentIndex(currentIndex);
+
+    dispatch(setCurrentIndex(currentIndex, C.CURRENT_INDEX)); // Use your actual action and constant
+
   }, [currentTime, result]);
 
   useMemo(() => {
@@ -523,6 +526,8 @@ const AudioTranscriptionLandingPage = () => {
     const userObj = new GetAnnotationsTaskAPI(id);
     dispatch(APITransport(userObj));
   };
+
+  console.log('SANNN currentIndex = ', currentIndex)
 
   useEffect(() => {
     getAnnotationsTaskData(taskId);

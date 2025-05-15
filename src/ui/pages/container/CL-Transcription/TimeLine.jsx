@@ -359,7 +359,6 @@ const Timeline = ({ currentTime, playing ,taskID, waveformSettings }) => {
               currentTime={currentTime}
               duration={player.duration}
               allowOverlap={allowOverlap}
-              onToggleOverlap={handleToggleOverlap}
             />
           </>
         )}
