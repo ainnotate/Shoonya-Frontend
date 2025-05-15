@@ -29,6 +29,10 @@ import LanguageCode from "../../../../utils/LanguageCode";
 import { TabsSuggestionData } from "../../../../utils/TabsSuggestionData/TabsSuggestionData";
 import Spinner from "../../component/common/Spinner";
 
+import NotificationManager from '../../../../utils/NotificationManager'; // Import from SimpleNotification.js
+import notificationService from '../../../../utils/NotificationService';
+
+
 //Components
 import {
   Box,
@@ -975,6 +979,7 @@ const TranscriptionRightPanel = ({
           />
         )}
       </Grid>
+      <NotificationManager />
     </>
   );
 };

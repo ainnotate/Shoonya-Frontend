@@ -1,5 +1,6 @@
 import store from "../redux/store/store";
 import DT from "duration-time-conversion";
+import notificationService from "./NotificationService";
 
 export function authenticateUser() {
   const access_token = localStorage.getItem("shoonya_access_token");
@@ -61,29 +62,64 @@ export const onSubtitleChange = (text, index) => {
   return copySub;
 };
 
-export const getUpdatedTime = (value, type, time, index, startEnd,page) => {
+/**
+ * Compares two time strings in the format hh:mm:ss.ms
+ * @param {string} startTime - Start time in format "hh:mm:ss.ms" (e.g., "00:00:00.750")
+ * @param {string} endTime - End time in format "hh:mm:ss.ms" (e.g., "00:00:00.908")
+ * @returns {number} - Returns 1 if startTime > endTime, 2 if endTime < startTime, 0 otherwise
+ */
+function compareTimesAndReturnCode(startTime, endTime) {
+  // Convert time string to milliseconds for easy comparison
+  const timeToMs = (timeStr) => {
+    const [hhmmss, ms] = timeStr.split('.');
+    const [hours, minutes, seconds] = hhmmss.split(':').map(Number);
+    
+    return (
+      hours * 3600000 +     // Convert hours to milliseconds
+      minutes * 60000 +     // Convert minutes to milliseconds
+      seconds * 1000 +      // Convert seconds to milliseconds
+      parseInt(ms, 10)      // Add milliseconds
+    );
+  };
+
+  // Convert input times to milliseconds
+  const startTimeMs = timeToMs(startTime);
+  const endTimeMs = timeToMs(endTime);
+
+  console.log('SANNN startTimeMs = ', startTimeMs)
+  console.log('SANNN endTimeMs = ', endTimeMs)
+
+  // Compare times and return appropriate code
+  if (endTimeMs < startTimeMs) {
+    return false;  // end_time is less than start_time (this is logically the same as the first condition)
+  } else {
+    return true;  // times are equal or in correct order (start_time <= end_time)
+  }
+}
+
+export const getUpdatedTime = (value, type, timeBeingModified, index, startEnd,page) => {
   const subtitles = store.getState().commonReducer.subtitles;
   const Duration = store.getState().getTaskDetails?.data?.data?.audio_duration;
-  const hours = Math.floor(Duration / 3600);
-  const minutes = Math.floor((Duration % 3600) / 60);
-  const seconds = Math.floor(Duration % 60);
-  const milliseconds = parseFloat(Duration.toString().split(".")[1]);
-  const convertedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}.${milliseconds.toString().padStart(3, '0')}`;
+
+  const hours = timeBeingModified.split(':')[0]
+  const minutes = timeBeingModified.split(':')[1]
+  const seconds = timeBeingModified.split(':')[2].split('.')[0]
+  const milliseconds = timeBeingModified.split(':')[2].split('.')[1]
+
   let newValue = "";
 
-  const [hh, mm, sec] = time.split(":");
+  const [hh, mm, sec] = timeBeingModified.split(":");
   const [ss, SSS] = sec.split(".");
 
   if (type === "hours") {
     newValue = Math.max(0, +value).toString().padStart(2, "0");
-  }
-  else if (type === "minutes" || type === "seconds") {
+  } else if (type === "minutes" || type === "seconds") {
     newValue = Math.max(0, Math.min(+value, 59)).toString().padStart(2, "0");
-  }
-  else if (type === "miliseconds") {
+  } else if (type === "miliseconds") {
     newValue = Math.max(0, Math.min(+value, 999)).toString().padStart(3, "0");
+  } else {
+   return timeBeingModified;
   }
-  else return convertedTime;
 
   let newTime = "";
 
@@ -97,6 +133,33 @@ export const getUpdatedTime = (value, type, time, index, startEnd,page) => {
     newTime = `${hh}:${mm}:${ss}.${newValue}`;
   }
 
+  let startTime;
+  let endTime;
+
+  if (startEnd == 'startTime') {
+    startTime = newTime
+    endTime = subtitles[index].end_time;
+  } else {
+    startTime = subtitles[index].start_time;
+    endTime = newTime;
+  }
+
+  const retCode = compareTimesAndReturnCode(startTime, endTime)
+
+  if (retCode == false) {
+    newTime = timeBeingModified;
+    console.log('SANNN - Start time is greater than end time...')
+    if (startEnd == 'startTime') {
+      notificationService.showError('Start time entered is greater than the end time')
+    } else {
+      notificationService.showError('End time entered is less than the start time')
+    }
+  } else {
+    notificationService.showSuccess('Time has been adjusted successfully.', 2000)
+  }
+
+  return newTime
+/*
   if (startEnd == "startTime") {
     const durationOfVideo = DT.t2d(convertedTime);
     const durationOfCurrent = DT.t2d(newTime);
@@ -150,6 +213,6 @@ export const getUpdatedTime = (value, type, time, index, startEnd,page) => {
       
     }
   }
-
   return newTime;
+*/
 };
