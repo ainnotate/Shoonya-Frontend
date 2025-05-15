@@ -14,3 +14,9 @@ export const setSubtitles = (data, type) => {
   };
 };
 
+export const setCurrentIndex = (index, type) => {
+  return {
+    type,
+    payload: index,
+  };
+};

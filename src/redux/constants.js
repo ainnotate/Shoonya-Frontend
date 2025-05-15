@@ -118,7 +118,7 @@ const constants = {
   SUBTITLES: "SUBTITLES",
   PATCH_ANNOTATION:"PATCH_ANNOTATION",
   UPDATE_UI_PREFS: "UPDATE_UI_PREFS",
-  
+  CURRENT_INDEX: "CURRENT_INDEX"
 };
 
 export default constants;

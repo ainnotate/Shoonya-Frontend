@@ -20,7 +20,12 @@ const reducer = (state = initialState, action) => {
       return result;
     }
 
-    
+    case C.CURRENT_INDEX:
+      return {
+        ...state,
+        currentIndex: action.payload,
+      };
+          
     default:
       return {
         ...state,

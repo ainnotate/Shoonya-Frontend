@@ -5,23 +5,45 @@ import { Box, TextField } from "@mui/material";
 const TimeBoxes = ({ handleTimeChange, time, index, type, locked }) => {
   const classes = AudioTranscriptionLandingStyle();
   
-  // Parse time values safely
-  const timeParts = time.split(":");
-  const hours = timeParts[0] || "00";
-  const minutes = timeParts[1] || "00";
-  
-  const secondsParts = (timeParts[2] || "00.000").split(".");
-  const seconds = secondsParts[0] || "00";
-  const milliseconds = secondsParts[1] || "000";
-
   // Store the original time value from props
   const originalTimeRef = useRef(time);
   
+  // Parse time values safely
+  const parseTimeString = (timeString) => {
+    const timeParts = timeString.split(":");
+    const hours = timeParts[0] || "00";
+    const minutes = timeParts[1] || "00";
+    
+    const secondsParts = (timeParts[2] || "00.000").split(".");
+    const seconds = secondsParts[0] || "00";
+    const milliseconds = secondsParts[1] || "000";
+    
+    return { hours, minutes, seconds, milliseconds };
+  };
+  
+  // Get initial time values
+  const initialTime = parseTimeString(time);
+  
   // Local state to track input values
-  const [localHours, setLocalHours] = useState(hours);
-  const [localMinutes, setLocalMinutes] = useState(minutes);
-  const [localSeconds, setLocalSeconds] = useState(seconds);
-  const [localMilliseconds, setLocalMilliseconds] = useState(milliseconds);
+  const [localHours, setLocalHours] = useState(initialTime.hours);
+  const [localMinutes, setLocalMinutes] = useState(initialTime.minutes);
+  const [localSeconds, setLocalSeconds] = useState(initialTime.seconds);
+  const [localMilliseconds, setLocalMilliseconds] = useState(initialTime.milliseconds);
+  
+  // Track if user is currently editing
+  const isEditingRef = useRef(false);
+
+  // Update local state when time prop changes (but only if not currently editing)
+  useEffect(() => {
+    if (time !== originalTimeRef.current && !isEditingRef.current) {
+      const newTime = parseTimeString(time);
+      setLocalHours(newTime.hours);
+      setLocalMinutes(newTime.minutes);
+      setLocalSeconds(newTime.seconds);
+      setLocalMilliseconds(newTime.milliseconds);
+      originalTimeRef.current = time;
+    }
+  }, [time]);
 
   // Format display values with padding
   const displayHours = String(parseInt(localHours, 10) || 0).padStart(2, '0');
@@ -42,6 +64,9 @@ const TimeBoxes = ({ handleTimeChange, time, index, type, locked }) => {
 
   // Function to handle focus events
   const handleFocus = (event, timeUnit) => {
+    // Mark as editing
+    isEditingRef.current = true;
+    
     // Reset the Enter handling flag
     handledByEnterRef.current = false;
     
@@ -122,6 +147,9 @@ const TimeBoxes = ({ handleTimeChange, time, index, type, locked }) => {
         }, 0);
       }
       
+      // Exit editing mode
+      isEditingRef.current = false;
+      
       // Remove focus from the input field
       event.target.blur();
     }
@@ -176,6 +204,11 @@ const TimeBoxes = ({ handleTimeChange, time, index, type, locked }) => {
         }
       }, 0);
     }
+    
+    // Exit editing mode after a small delay
+    setTimeout(() => {
+      isEditingRef.current = false;
+    }, 100);
   };
 
   // Function to reset local values to original time

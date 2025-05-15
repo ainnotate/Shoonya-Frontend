@@ -297,6 +297,7 @@ const Timeline = ({ currentTime, playing ,taskID, waveformSettings }) => {
   const $footer = useRef();
   const classes = AudioTranscriptionLandingStyle();
   const player = useSelector((state) => state.commonReducer.player);
+  const [allowOverlap, setAllowOverlap] = useState(true);
 
   const [waveform, setWaveform] = useState();
   const [render, setRender] = useState({
@@ -337,6 +338,11 @@ const Timeline = ({ currentTime, playing ,taskID, waveformSettings }) => {
     return () => window.removeEventListener("wheel", onWheelThrottle);
   }, [onWheel]);
 
+  // Function to handle toggle from the context menu
+  const handleToggleOverlap = (newValue) => {
+    setAllowOverlap(newValue);
+  };
+
   return (
     <Box className={classes.timeLineParent} ref={$footer}>
       {player &&
@@ -352,6 +358,8 @@ const Timeline = ({ currentTime, playing ,taskID, waveformSettings }) => {
               playing={playing}
               currentTime={currentTime}
               duration={player.duration}
+              allowOverlap={allowOverlap}
+              onToggleOverlap={handleToggleOverlap}
             />
           </>
         )}

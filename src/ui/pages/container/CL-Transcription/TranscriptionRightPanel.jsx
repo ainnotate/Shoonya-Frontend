@@ -674,10 +674,11 @@ const TranscriptionRightPanel = ({
 
   const handleToggleVisibility = useCallback((index) => {
     const updatedSubtitles = [...subtitles];
-    updatedSubtitles[index] = {
-      ...updatedSubtitles[index],
+
+    updatedSubtitles[index] = createSubtitleCopy(updatedSubtitles[index], {
       hidden: !updatedSubtitles[index].hidden
-    };
+    });
+
     dispatch(setSubtitles(updatedSubtitles, C.SUBTITLES));
 
     notificationService.showInfo(

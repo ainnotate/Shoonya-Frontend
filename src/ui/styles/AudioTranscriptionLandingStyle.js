@@ -599,6 +599,41 @@ const AudioTranscriptionLandingStyle = makeStyles({
     },
   },
 
+  // Add these new classes for locked segments
+  lockedHandle: {
+    cursor: 'not-allowed !important', // Important to override any hover effects
+    '&:hover': {
+      cursor: 'not-allowed !important', // Also override hover state
+    }
+  },
+  
+  lockedText: {
+    cursor: 'not-allowed !important',
+    '&:hover': {
+      cursor: 'not-allowed !important',
+    }
+  },
+  
+  // Update the existing subLocked class
+  subLocked: {
+    background: 'repeating-linear-gradient(45deg, rgba(255,0,0,0.1), rgba(255,0,0,0.1) 10px, rgba(255,0,0,0.2) 10px, rgba(255,0,0,0.2) 20px)',
+    // We still want to allow double-click
+    pointerEvents: 'auto',
+    // Override cursor for the entire segment
+    '& $subHandle': {
+      cursor: 'not-allowed !important', 
+      '&:hover': {
+        cursor: 'not-allowed !important',
+      }
+    },
+    '& $subText': {
+      cursor: 'not-allowed !important',
+      '&:hover': {
+        cursor: 'not-allowed !important',
+      }
+    }
+  },
+
   suggestionListHeader: {
     padding: "10px",
     display: "flex",
