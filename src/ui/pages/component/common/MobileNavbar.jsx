@@ -172,7 +172,7 @@ function MobileNavbar(props) {
 
                   }}
                 >
-                  Shoonya
+                  DL Studio
                 </Typography>
             </Grid>
             <Grid item>
