@@ -325,6 +325,7 @@ const TranscriptionRightPanel = ({
     // eslint-disable-next-line
   }, [limit, currentOffset]);
 
+  console.log('SANNN - ', subtitles)
   const onMergeClick = useCallback(
     (index) => {
 
@@ -629,12 +630,38 @@ const TranscriptionRightPanel = ({
     return () => clearTimeout(timer);
   }, []);
 
+  const createSubtitleCopy = (originalSub, changes = {}) => {
+    // Create a new object with the same prototype
+    const newSub = Object.create(Object.getPrototypeOf(originalSub));
+    
+    // Copy all properties
+    Object.getOwnPropertyNames(originalSub).forEach(prop => {
+      if (!changes.hasOwnProperty(prop)) {
+        Object.defineProperty(newSub, prop, 
+          Object.getOwnPropertyDescriptor(originalSub, prop));
+      }
+    });
+    
+    // Apply changes
+    Object.keys(changes).forEach(key => {
+      newSub[key] = changes[key];
+    });
+    
+    return newSub;
+  };
+
   const handleToggleLock = useCallback((index) => {
     const updatedSubtitles = [...subtitles];
-    updatedSubtitles[index] = {
+
+/*    updatedSubtitles[index] = {
       ...updatedSubtitles[index],
       locked: !updatedSubtitles[index].locked
     };
+*/
+    updatedSubtitles[index] = createSubtitleCopy(updatedSubtitles[index], {
+      locked: !updatedSubtitles[index].locked
+    });
+
     dispatch(setSubtitles(updatedSubtitles, C.SUBTITLES));
 
     notificationService.showInfo(
