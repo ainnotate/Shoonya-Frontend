@@ -727,13 +727,6 @@ const AllAudioTranscriptionLandingPage = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        width={"100%"}
-        position="fixed"
-        bottom={1}
-      >
-        {audioURL ? (waveSurfer ? <Timeline2 key={taskDetails?.data?.audio_url} details={taskDetails} waveformSettings={waveSurferWaveformSettings}/> : <Timeline currentTime={currentTime} playing={playing} taskID={taskData?.id} waveformSettings={waveformSettings} />) : <div style={{marginLeft:"49%", marginBottom:"2%"}}><CircularProgress/></div>}
-      </Grid>
     </>
   );
 };

@@ -32,6 +32,11 @@ import Spinner from "../../component/common/Spinner";
 import NotificationManager from '../../../../utils/NotificationManager'; // Import from SimpleNotification.js
 import notificationService from '../../../../utils/NotificationService';
 
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+
 
 //Components
 import {
@@ -322,6 +327,15 @@ const TranscriptionRightPanel = ({
 
   const onMergeClick = useCallback(
     (index) => {
+
+      if (subtitles[index]?.locked) {
+        notificationService.showWarning('Segment is locked, merging is prohibited', 3000)
+        return;
+      } else if (subtitles[index+1]?.locked) {
+        notificationService.showWarning('Next segment is locked, merging is prohibited', 3000)
+        return;
+      }
+
       const selectionStart = getSelectionStart(index);
       const timings = getTimings(index);
 
@@ -341,7 +355,7 @@ const TranscriptionRightPanel = ({
       // saveTranscriptHandler(false, true, sub);
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [subtitles, limit, currentOffset]
   );
 
   const onMouseUp = (e, blockIdx) => {
@@ -460,18 +474,32 @@ const TranscriptionRightPanel = ({
     );
   };
 
+  // Update the existing handlers to check for locked segments
   const handleTimeChange = useCallback(
     (value, index, type, time) => {
+
+      if (subtitles[index]?.locked) {
+        notificationService.showWarning('Segment is locked, editing is prohibited', 3000)
+
+        return;
+      }
+      
       const sub = timeChange(value, index, type, time);
       dispatch(setSubtitles(sub, C.SUBTITLES));
-      // saveTranscriptHandler(false, true, sub);
     },
-    // eslint-disable-next-line
-    [limit, currentOffset]
+    [subtitles, dispatch, limit, currentOffset]
   );
+  // Similarly modify changeTranscriptHandler, onDelete, onMergeClick, etc.
 
   const onDelete = useCallback(
     (index) => {
+
+      if (subtitles[index]?.locked) {
+        notificationService.showWarning('Segment is locked, deleting is prohibited', 3000)
+
+        return;
+      }
+
       setUndoStack((prevState) => [
         ...prevState,
         {
@@ -487,7 +515,7 @@ const TranscriptionRightPanel = ({
       // saveTranscriptHandler(false, false, sub);
     },
     // eslint-disable-next-line
-    [limit, currentOffset]
+    [subtitles, limit, currentOffset]
   );
 
   const addNewSubtitleBox = useCallback(
@@ -601,6 +629,56 @@ const TranscriptionRightPanel = ({
     return () => clearTimeout(timer);
   }, []);
 
+  const handleToggleLock = useCallback((index) => {
+    const updatedSubtitles = [...subtitles];
+    updatedSubtitles[index] = {
+      ...updatedSubtitles[index],
+      locked: !updatedSubtitles[index].locked
+    };
+    dispatch(setSubtitles(updatedSubtitles, C.SUBTITLES));
+
+    notificationService.showInfo(
+      updatedSubtitles[index].locked ? 
+        `Segment ${index + 1} locked.` : 
+        `Segment ${index + 1} unlocked.`,
+        3000)
+    
+  }, [subtitles, dispatch]);
+
+  const handleToggleVisibility = useCallback((index) => {
+    const updatedSubtitles = [...subtitles];
+    updatedSubtitles[index] = {
+      ...updatedSubtitles[index],
+      hidden: !updatedSubtitles[index].hidden
+    };
+    dispatch(setSubtitles(updatedSubtitles, C.SUBTITLES));
+
+    notificationService.showInfo(
+      updatedSubtitles[index].hidden ? 
+        `Segment ${index + 1} hidden from Timeline.` : 
+        `Segment ${index + 1} visible in Timeline.`,
+        3000)
+
+  }, [subtitles, dispatch]);
+
+  // Add keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.altKey && event.key === "l" && currentIndex >= 0) {
+        event.preventDefault();
+        handleToggleLock(currentIndex);
+      }
+      
+      if (event.altKey && event.key === "v" && currentIndex >= 0) {
+        event.preventDefault();
+        handleToggleVisibility(currentIndex);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [currentIndex, handleToggleLock, handleToggleVisibility]);
+
   return (
     <>
       {" "}
@@ -701,11 +779,44 @@ const TranscriptionRightPanel = ({
                         {index+1}
                       </div>
 
+                      <Tooltip title={item.locked ? "Unlock Segment" : "Lock Segment"} placement="bottom">
+                        <IconButton
+                          size="small"
+                          style={{
+                            color: item.locked ? "#FF474C" : "#000",
+                            backgroundColor: "#fff",
+                            borderRadius: "50%",
+                            marginRight: "10px",
+                            border: item.locked ? "1px solid #FF474C" : "1px solid #ccc",
+                          }}
+                          onClick={() => handleToggleLock(index + idxOffset)}
+                        >
+                          {item.locked ? <LockIcon /> : <LockOpenIcon />}
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title={item.hidden ? "Show in Timeline" : "Hide from Timeline"} placement="bottom">
+                        <IconButton
+                          size="small"
+                          style={{
+                            color: item.hidden ? "#9e9e9e" : "#008080",
+                            backgroundColor: "#fff",
+                            borderRadius: "50%",
+                            marginRight: "10px",
+                            border: item.hidden ? "1px solid #9e9e9e" : "1px solid #008080",
+                          }}
+                          onClick={() => handleToggleVisibility(index + idxOffset)}
+                        >
+                          {item.hidden ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </Tooltip>
+
                       <TimeBoxes
                         handleTimeChange={handleTimeChange}
                         time={item.start_time}
                         index={index + idxOffset}
                         type={"startTime"}
+                        locked={subtitles[index]?.locked}
                       />
 
                       <FormControl
@@ -714,6 +825,7 @@ const TranscriptionRightPanel = ({
                       >
                         <InputLabel id="select-speaker">Select Speaker</InputLabel>
                         <Select
+                          disabled={subtitles[index]?.locked}
                           fullWidth
                           labelId="select-speaker"
                           label="Select Speaker"
@@ -784,6 +896,7 @@ const TranscriptionRightPanel = ({
                         time={item.end_time}
                         index={index + idxOffset}
                         type={"endTime"}
+                        locked={subtitles[index]?.locked}
                       />
                     </Box>
 
@@ -828,6 +941,7 @@ const TranscriptionRightPanel = ({
                             return (
                               <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                                 <textarea
+                                  disabled={subtitles[index]?.locked}
                                   className={`${classes.customTextarea} ${currentIndex === (idxOffset + index) ? classes.boxHighlight : ""
                                     }`}
                                   dir={enableRTL_Typing ? "rtl" : "ltr"}
@@ -849,6 +963,7 @@ const TranscriptionRightPanel = ({
                       ) : (
                         <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                           <textarea
+                            disabled={subtitles[index]?.locked}
                             ref={el => textRefs.current[index] = el}
                             // onChange={(event) => {
                             onInput={(event) => {
@@ -889,6 +1004,7 @@ const TranscriptionRightPanel = ({
                               return (
                               <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                                 <textarea
+                                  disabled={subtitles[index]?.locked}
                                   className={`${classes.customTextarea} ${currentIndex === (idxOffset + index) ? classes.boxHighlight : ""
                                     }`}
                                   dir={enableRTL_Typing ? "rtl" : "ltr"}
@@ -902,6 +1018,7 @@ const TranscriptionRightPanel = ({
                         ) : (
                           <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                             <textarea
+                              disabled={subtitles[index]?.locked}
                               ref={el => textRefs.current[index + currentPageData?.length] = el}
                               onChange={(event) => {
                                 changeTranscriptHandler(event, index + idxOffset, true);

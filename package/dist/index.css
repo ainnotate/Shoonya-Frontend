@@ -1,0 +1,26 @@
+.vNSxFa_ReactTransliterate {
+  text-align: left;
+  z-index: 20000;
+  width: 100%;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #00000026;
+  padding: 1px;
+  font-size: 14px;
+  list-style: none;
+  display: block;
+  box-shadow: 0 6px 12px #0000002d;
+}
+
+.vNSxFa_ReactTransliterate > li {
+  cursor: pointer;
+  min-width: 100px;
+  padding: 10px;
+}
+
+.vNSxFa_Active {
+  color: #fff;
+  background-color: #65c3d7;
+}
+
+/*# sourceMappingURL=index.css.map */

@@ -14,6 +14,11 @@ export default class Sub {
     this.audio_speed = obj.audio_speed;
     this.speaker_id = obj.speaker_id;
     this.acoustic_normalised_text = obj.acoustic_normalised_text ?? "";
+
+    // Add locked and hidden properties with default values
+    // Using obj instead of subtitle (which was causing an error)
+    this.locked = obj.locked || false;
+    this.hidden = obj.hidden || false;
   }
 
   get check() {

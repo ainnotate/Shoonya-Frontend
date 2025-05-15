@@ -525,3 +525,44 @@ export const MenuProps = {
     },
   },
 };
+
+
+/**
+ * Toggles the lock status of a segment
+ * @param {number} index - Index of the segment
+ * @returns {Array} Updated subtitles array
+ */
+export const toggleLock = (index) => {
+  // Get current subtitles directly from the store
+  const subtitles = store.getState().commonReducer.subtitles;
+  const subs = [...subtitles];
+  
+  if (index >= 0 && index < subs.length) {
+    subs[index] = {
+      ...subs[index],
+      locked: !subs[index].locked
+    };
+  }
+  
+  return subs;
+};
+
+/**
+ * Toggles the visibility of a segment in the timeline
+ * @param {number} index - Index of the segment
+ * @returns {Array} Updated subtitles array
+ */
+export const toggleVisibility = (index) => {
+  // Get current subtitles directly from the store
+  const subtitles = store.getState().commonReducer.subtitles;
+  const subs = [...subtitles];
+  
+  if (index >= 0 && index < subs.length) {
+    subs[index] = {
+      ...subs[index],
+      hidden: !subs[index].hidden
+    };
+  }
+  
+  return subs;
+};

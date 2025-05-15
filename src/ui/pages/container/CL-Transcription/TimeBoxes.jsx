@@ -2,7 +2,7 @@ import React, { memo, useState, useEffect, useRef } from "react";
 import AudioTranscriptionLandingStyle from "../../../styles/AudioTranscriptionLandingStyle";
 import { Box, TextField } from "@mui/material";
 
-const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
+const TimeBoxes = ({ handleTimeChange, time, index, type, locked }) => {
   const classes = AudioTranscriptionLandingStyle();
   
   // Parse time values safely
@@ -197,6 +197,7 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
   return (
     <Box display="flex">
       <TextField
+        disabled={locked}
         variant="standard"
         onChange={(event) => handleLocalChange(event, "hours")}
         onKeyPress={(event) => handleKeyPress(event, "hours")}
@@ -211,12 +212,14 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         type="number"
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={":"}
         style={{ width: "2%" }}
         className={classes.timeInputBox}
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={displayMinutes}
         className={classes.timeInputBox}
@@ -228,12 +231,14 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         type="number"
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={":"}
         style={{ width: "2%" }}
         className={classes.timeInputBox}
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={displaySeconds}
         onFocus={(event) => handleFocus(event, "seconds")}
@@ -245,12 +250,14 @@ const TimeBoxes = ({ handleTimeChange, time, index, type }) => {
         type="number"
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={"."}
         style={{ width: "2%" }}
         className={classes.timeInputBox}
       />
       <TextField
+        disabled={locked}
         variant="standard"
         value={displayMilliseconds}
         style={{ width: "20%", paddingRight: "10px" }}
