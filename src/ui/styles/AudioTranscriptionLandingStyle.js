@@ -670,6 +670,23 @@ const AudioTranscriptionLandingStyle = makeStyles({
       },
     },
   },
+
+subSelected: {
+  // Styling for the user-selected subtitle (based on click)
+  '& $subText': {
+    // Make the text more prominent in selected subtitle
+    fontWeight: 'bold'
+  },
+  
+  '& $subHandle': {
+    // Make handles more visible on selected subtitle
+    backgroundColor: 'rgba(0, 128, 128, 0.5)',
+    
+    '&:hover': {
+      backgroundColor: 'rgba(0, 128, 128, 0.8)'
+    }
+  }
+},
 });
 
 export default AudioTranscriptionLandingStyle;
