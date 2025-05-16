@@ -508,110 +508,6 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     [player, removeSub, updateSub]
   );
 
-  // Fixed DynamicMenu component with null checks
-  const DynamicMenu = connectMenu("contextmenu")((props) => {
-    const { id, trigger } = props;
-    
-    return (
-      <ContextMenu id={id} className={classes.menuItemNav} style={{
-        backgroundColor: 'white',
-        boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-        padding: '5px 0',
-        minWidth: '200px',
-        zIndex: 99999, // Extremely high z-index to ensure it's on top
-        position: 'fixed', // Use fixed instead of relative
-        opacity: 1,
-        visibility: 'visible',
-        pointerEvents: 'auto',
-      }}>
-        <MenuItem
-          className={classes.menuItem}
-          onClick={() => {
-            // Check if lastSub exists
-            if (!lastSub) {
-              setSnackbarInfo({
-                open: true,
-                message: "No segment selected",
-                variant: "warning",
-              });
-              return;
-            }
-            
-            removeSub(lastSub);
-          }}
-          disabled={!lastSub || (lastSub && lastSub.locked)}
-          style={{ 
-            opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
-            padding: '8px 15px',
-            cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
-            backgroundColor: 'white',
-            color: 'black',
-          }}
-        >
-          Delete Subtitle
-        </MenuItem>
-        
-        {lastSub && result && result.length > 0 && result.indexOf(lastSub) < result.length - 1 && (
-          <MenuItem
-            className={classes.menuItem}
-            onClick={() => {
-              // Check again in case things changed
-              if (!lastSub) {
-                setSnackbarInfo({
-                  open: true,
-                  message: "No segment selected",
-                  variant: "warning",
-                });
-                return;
-              }
-              
-              mergeSub(lastSub);
-            }}
-            disabled={!lastSub || (lastSub && lastSub.locked)}
-            style={{ 
-              opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
-              padding: '8px 15px',
-              cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
-              backgroundColor: 'white',
-              color: 'black',
-            }}
-          >
-            Merge Next
-          </MenuItem>
-        )}
-                  
-{/*        <MenuItem
-          className={classes.menuItem}
-          onClick={() => {
-            const newAllowOverlap = !allowOverlap;
-            if (typeof onToggleOverlap === 'function') {
-              onToggleOverlap(newAllowOverlap);
-            }
-            setSnackbarInfo({
-              open: true,
-              message: `Segment overlap ${newAllowOverlap ? 'enabled' : 'disabled'}`,
-              variant: "info",
-            });
-          }}
-          style={{ 
-            padding: '8px 15px',
-            borderTop: '1px solid #eee',
-            marginTop: '5px',
-            paddingTop: '10px',
-            backgroundColor: allowOverlap ? 'rgba(0, 128, 128, 0.1)' : 'rgba(153, 51, 0, 0.1)',
-            cursor: 'pointer',
-            opacity: 1,
-            color: 'black',
-          }}
-        >
-          {allowOverlap ? "Disable Segment Overlap" : "Enable Segment Overlap"}
-        </MenuItem>
-*/}      </ContextMenu>
-    );
-  });
-
   useEffect(() => {
     document.addEventListener("mousemove", onDocumentMouseMove);
     document.addEventListener("mouseup", onDocumentMouseUp);
@@ -721,7 +617,106 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     }
   };
 
-  // Create a dedicated context menu for locked segments
+  // First, add a style tag for hover effects
+  const addHoverStyles = () => {
+    const styleTag = document.createElement('style');
+    styleTag.innerHTML = `
+      .menu-item-hover:not([disabled]):hover {
+        background-color: rgba(0, 128, 128, 0.1) !important;
+        transition: background-color 0.2s ease;
+      }
+      
+      .menu-item-disabled:hover {
+        background-color: rgba(0, 128, 128, 0.05) !important;
+        transition: background-color 0.2s ease;
+      }
+    `;
+    document.head.appendChild(styleTag);
+  };
+
+  // Call this function at component initialization
+  useEffect(() => {
+    addHoverStyles();
+  }, []);
+
+  // Modified DynamicMenu component with CSS-based hover effect
+  const DynamicMenu = connectMenu("contextmenu")((props) => {
+    const { id, trigger } = props;
+    
+    return (
+      <ContextMenu id={id} className={classes.menuItemNav} style={{
+        backgroundColor: 'white',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        padding: '5px 0',
+        minWidth: '200px',
+        zIndex: 99999, // Extremely high z-index to ensure it's on top
+        position: 'fixed', // Use fixed instead of relative
+        opacity: 1,
+        visibility: 'visible',
+        pointerEvents: 'auto',
+      }}>
+        <MenuItem
+          className={`${classes.menuItem} ${!lastSub || (lastSub && lastSub.locked) ? 'menu-item-disabled' : 'menu-item-hover'}`}
+          onClick={() => {
+            // Check if lastSub exists
+            if (!lastSub) {
+              setSnackbarInfo({
+                open: true,
+                message: "No segment selected",
+                variant: "warning",
+              });
+              return;
+            }
+            
+            removeSub(lastSub);
+          }}
+          disabled={!lastSub || (lastSub && lastSub.locked)}
+          style={{ 
+            opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
+            padding: '8px 15px',
+            cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
+            backgroundColor: 'white',
+            color: 'black',
+          }}
+        >
+          Delete Subtitle
+        </MenuItem>
+        
+        {lastSub && result && result.length > 0 && result.indexOf(lastSub) < result.length - 1 && (
+          <MenuItem
+            className={`${classes.menuItem} ${!lastSub || (lastSub && lastSub.locked) ? 'menu-item-disabled' : 'menu-item-hover'}`}
+            onClick={() => {
+              // Check again in case things changed
+              if (!lastSub) {
+                setSnackbarInfo({
+                  open: true,
+                  message: "No segment selected",
+                  variant: "warning",
+                });
+                return;
+              }
+              
+              mergeSub(lastSub);
+            }}
+            disabled={!lastSub || (lastSub && lastSub.locked)}
+            style={{ 
+              opacity: (!lastSub || (lastSub && lastSub.locked)) ? 0.5 : 1,
+              padding: '8px 15px',
+              cursor: (!lastSub || (lastSub && lastSub.locked)) ? 'not-allowed' : 'pointer',
+              backgroundColor: 'white',
+              color: 'black',
+            }}
+          >
+            Merge Next
+          </MenuItem>
+        )}
+      </ContextMenu>
+    );
+  });
+
+  // Modified LockedDynamicMenu component with CSS-based hover effect
   const LockedDynamicMenu = connectMenu("locked-contextmenu")((props) => {
     const { id, trigger } = props;
     
@@ -740,7 +735,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
         pointerEvents: 'auto',
       }}>        
         <MenuItem
-          className={classes.menuItem}
+          className={`${classes.menuItem} menu-item-disabled`}
           style={{ 
             padding: '8px 15px',
             cursor: 'not-allowed',
@@ -754,6 +749,8 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
       </ContextMenu>
     );
   });
+
+
 
   return (
     <div className={classes.parentSubtitleBox} ref={$blockRef}>
