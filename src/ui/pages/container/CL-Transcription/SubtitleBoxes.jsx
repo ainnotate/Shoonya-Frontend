@@ -609,8 +609,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
           Play Segment
         </MenuItem>
         
-        {/* Add a context menu item to toggle overlap mode */}
-        <MenuItem
+{/*        <MenuItem
           className={classes.menuItem}
           onClick={() => {
             const newAllowOverlap = !allowOverlap;
@@ -636,7 +635,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
         >
           {allowOverlap ? "Disable Segment Overlap" : "Enable Segment Overlap"}
         </MenuItem>
-      </ContextMenu>
+*/}      </ContextMenu>
     );
   });
 
