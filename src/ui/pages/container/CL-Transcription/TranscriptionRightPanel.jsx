@@ -209,10 +209,13 @@ const TranscriptionRightPanel = ({
   useEffect(() => {
     if(currentIndex >= startIndex) {
       // if(currentIndex >= startIndex && currentIndex <= endIndex) {
-      const subtitleScrollEle = document.getElementById("subTitleContainer");
-      subtitleScrollEle
-        .querySelector(`#sub_${currentIndex}`)
-        ?.scrollIntoView(true, { block: "start" });
+
+      setTimeout(() => {
+        const subtitleScrollEle = document.getElementById("subTitleContainer");
+        subtitleScrollEle
+          ?.querySelector(`#sub_${currentIndex}`)
+          ?.scrollIntoView({ block: "center", behavior: "smooth" });
+      }, 50);
     }
 
     // if (currentIndex > startIndex) {
