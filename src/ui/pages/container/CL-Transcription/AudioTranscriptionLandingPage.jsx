@@ -928,9 +928,10 @@ useEffect(() => {
             sx={{ ml: 1 ,mt:2}}
             onClick={() => {
               localStorage.removeItem("labelAll");
-              navigate(`/projects/${projectId}`);
+              //navigate(`/projects/${projectId}`);
               //window.location.replace(`/#/projects/${projectId}`);
               //window.location.reload();
+              window.history.back()
             }}
           >
             Back to Project
