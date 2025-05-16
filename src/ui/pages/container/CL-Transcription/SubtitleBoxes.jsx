@@ -581,34 +581,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
             Merge Next
           </MenuItem>
         )}
-          
-        <MenuItem
-          className={classes.menuItem}
-          onClick={() => {
-            // Check if lastSub exists
-            if (!lastSub) {
-              setSnackbarInfo({
-                open: true,
-                message: "No segment selected",
-                variant: "warning",
-              });
-              return;
-            }
-            
-            handleDoubleClick(lastSub);
-          }}
-          disabled={!lastSub}
-          style={{ 
-            opacity: !lastSub ? 0.5 : 1,
-            padding: '8px 15px',
-            cursor: !lastSub ? 'not-allowed' : 'pointer',
-            backgroundColor: 'white',
-            color: 'black',
-          }}
-        >
-          Play Segment
-        </MenuItem>
-        
+                  
 {/*        <MenuItem
           className={classes.menuItem}
           onClick={() => {
@@ -748,6 +721,40 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     }
   };
 
+  // Create a dedicated context menu for locked segments
+  const LockedDynamicMenu = connectMenu("locked-contextmenu")((props) => {
+    const { id, trigger } = props;
+    
+    return (
+      <ContextMenu id={id} className={classes.menuItemNav} style={{
+        backgroundColor: 'white',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.4)',
+        border: '1px solid #ccc',
+        borderRadius: '4px',
+        padding: '5px 0',
+        minWidth: '200px',
+        zIndex: 99999, // Extremely high z-index to ensure it's on top
+        position: 'fixed', // Use fixed instead of relative
+        opacity: 1,
+        visibility: 'visible',
+        pointerEvents: 'auto',
+      }}>        
+        <MenuItem
+          className={classes.menuItem}
+          style={{ 
+            padding: '8px 15px',
+            cursor: 'not-allowed',
+            opacity: 0.5,
+            backgroundColor: 'white',
+            color: 'black',
+          }}
+        >
+          <i>Cannot Edit Locked Segment</i>
+        </MenuItem>
+      </ContextMenu>
+    );
+  });
+
   return (
     <div className={classes.parentSubtitleBox} ref={$blockRef}>
       {renderSnackBar()}
@@ -802,8 +809,14 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
               onDoubleClick={() => handleDoubleClick(sub)}
             >
             {isLocked ? (
-              // For locked segments, don't use ContextMenuTrigger
-              <>
+              // For locked segments, use ContextMenuTrigger with different ID
+              <ContextMenuTrigger
+                id="locked-contextmenu"
+                holdToDisplay={-1}
+                parentSub={sub}
+                collect={(props) => props}
+                attributes={attributes}
+              >
                 {/* Left handle with explicit cursor setting */}
                 <div
                   className={classes.subHandle}
@@ -850,9 +863,9 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                   onMouseLeave={(e) => setCursorStyle(e.currentTarget, 'default')}
                 ></div>
                 <div className={classes.subDuration}>{sub.duration}</div>
-              </>
+              </ContextMenuTrigger>
             ) : (
-              // For normal segments, use ContextMenuTrigger
+              // For normal segments, use ContextMenuTrigger (existing code)
               <ContextMenuTrigger
                 id="contextmenu"
                 holdToDisplay={-1}
@@ -869,7 +882,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                     backgroundColor: isCurrentSub ? "rgba(0, 128, 128, 0.5)" : undefined,
                   }}
                   onMouseDown={(event) => onMouseDown(sub, event, "left")}
-onMouseEnter={(e) => setCursorStyle(e.currentTarget, 'col-resize')}
+                  onMouseEnter={(e) => setCursorStyle(e.currentTarget, 'col-resize')}
                   onMouseLeave={(e) => setCursorStyle(e.currentTarget, 'default')}
                 ></div>
 
@@ -923,6 +936,7 @@ onMouseEnter={(e) => setCursorStyle(e.currentTarget, 'col-resize')}
         })}
       </div>
       <DynamicMenu />
+      <LockedDynamicMenu />
     </div>
   );
 }
