@@ -753,19 +753,6 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     <div className={classes.parentSubtitleBox} ref={$blockRef}>
       {renderSnackBar()}
       {/* Add a visual indicator for overlap mode */}
-      <div style={{ 
-        position: 'absolute', 
-        top: '5px', 
-        right: '5px', 
-        padding: '2px 8px',
-        backgroundColor: allowOverlap ? 'rgba(0, 128, 128, 0.7)' : 'rgba(153, 51, 0, 0.7)',
-        color: 'white',
-        borderRadius: '4px',
-        fontSize: '12px',
-        zIndex: 1000
-      }}>
-        {allowOverlap ? 'Overlap Enabled' : 'Overlap Disabled'}
-      </div>
       <div ref={$subsRef}>
         {currentSubs?.map((sub, key) => {
           // Skip hidden segments completely
