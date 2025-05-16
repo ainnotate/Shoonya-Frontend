@@ -815,7 +815,7 @@ const TranscriptionRightPanel = ({
                     }}
                   >
                     <Box className={classes.topBox} style={{paddingLeft: "16px", paddingRight: "16px", paddingTop: "14px", paddingBottom: "10px"}}>
-                      <div style={{display:"block", height:"30px", width:"90px", lineHeight:"30px", borderRadius:"50%", fontSize:"medium", backgroundColor:"#008080", color:"white", marginRight:"20px", marginLeft:"5px"}}>
+                      <div style={{display:"block", height:"35px", width:"100px", lineHeight:"35px", borderRadius:"50%", fontSize:"medium", backgroundColor:"#008080", color:"white", marginRight:"10px", marginLeft:"5px"}}>
                         {index+1}
                       </div>
 
@@ -860,7 +860,7 @@ const TranscriptionRightPanel = ({
                       />
 
                       <FormControl
-                        sx={{ width: "50%", mr: "auto", float: "left", marginRight:"10px" }}
+                        sx={{ width: "60%", mr: "auto", float: "left", marginRight:"10px", marginTop:"10px" }}
                         size="small"
                       >
                         <InputLabel id="select-speaker">Select Speaker</InputLabel>
