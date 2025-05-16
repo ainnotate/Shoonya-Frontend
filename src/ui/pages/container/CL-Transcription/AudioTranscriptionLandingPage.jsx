@@ -508,15 +508,15 @@ const AudioTranscriptionLandingPage = () => {
     // eslint-disable-next-line
   }, [annotations]);
 
-  useMemo(() => {
+/*  useMemo(() => {
     const currentIndex = result?.findIndex(
       (item) => item?.startTime <= currentTime && item?.endTime > currentTime
     );
 
-//    dispatch(setCurrentIndex(currentIndex, C.CURRENT_INDEX)); // Use your actual action and constant
+    dispatch(setCurrentIndex(currentIndex, C.CURRENT_INDEX)); // Use your actual action and constant
 
   }, [currentTime, result]);
-
+*/
   useMemo(() => {
     result && setCurrentSubs(result[currentIndex]);
   }, [result, currentIndex]);

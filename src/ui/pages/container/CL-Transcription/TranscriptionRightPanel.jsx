@@ -719,6 +719,14 @@ const TranscriptionRightPanel = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, handleToggleLock, handleToggleVisibility]);
 
+  const handleSubTitleClick = (index) => {
+    console.log("Textarea clicked!");
+    // Add your custom logic here
+
+    dispatch(setCurrentIndex(index, C.CURRENT_INDEX)); // Use your actual action and constant
+  }
+
+
   return (
     <>
       {" "}
@@ -981,6 +989,7 @@ const TranscriptionRightPanel = ({
                             return (
                               <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                                 <textarea
+                                  onClick={() => handleSubTitleClick(index)}
                                   disabled={subtitles[index]?.locked}
                                   className={`${classes.customTextarea} ${currentIndex === (idxOffset + index) ? classes.boxHighlight : ""
                                     }`}
@@ -1003,6 +1012,7 @@ const TranscriptionRightPanel = ({
                       ) : (
                         <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                           <textarea
+                            onClick={() => handleSubTitleClick(index)}
                             disabled={subtitles[index]?.locked}
                             ref={el => textRefs.current[index] = el}
                             // onChange={(event) => {
@@ -1058,6 +1068,7 @@ const TranscriptionRightPanel = ({
                         ) : (
                           <div className={classes.relative} style={{ width: "100%", height: "100%" }}>
                             <textarea
+                              onClick={() => handleSubTitleClick(index)}
                               disabled={subtitles[index]?.locked}
                               ref={el => textRefs.current[index + currentPageData?.length] = el}
                               onChange={(event) => {
