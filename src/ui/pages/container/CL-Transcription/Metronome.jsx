@@ -14,6 +14,7 @@ import { Box } from "@mui/material";
 import C from "../../../../redux/constants";
 import {
     setSubtitles,
+    setCurrentIndex
   } from "../../../../redux/actions/Common";
 
 const findIndex = (subs, startTime) => {
@@ -104,6 +105,13 @@ export default React.memo(
           );
 
           dispatch(setSubtitles(copySub, C.SUBTITLES));
+          dispatch(setCurrentIndex(index, C.CURRENT_INDEX));
+          setTimeout(() => {
+            const subtitleScrollEle = document.getElementById("subTitleContainer");
+            subtitleScrollEle
+              ?.querySelector(`#sub_${index}`)
+              ?.scrollIntoView({ block: "center", behavior: "smooth" });
+          }, 50);
         }
       }
       setIsDroging(false);

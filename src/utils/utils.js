@@ -86,9 +86,6 @@ function compareTimesAndReturnCode(startTime, endTime) {
   const startTimeMs = timeToMs(startTime);
   const endTimeMs = timeToMs(endTime);
 
-  console.log('SANNN startTimeMs = ', startTimeMs)
-  console.log('SANNN endTimeMs = ', endTimeMs)
-
   // Compare times and return appropriate code
   if (endTimeMs < startTimeMs) {
     return false;  // end_time is less than start_time (this is logically the same as the first condition)
@@ -148,7 +145,6 @@ export const getUpdatedTime = (value, type, timeBeingModified, index, startEnd,p
 
   if (retCode == false) {
     newTime = timeBeingModified;
-    console.log('SANNN - Start time is greater than end time...')
     if (startEnd == 'startTime') {
       notificationService.showError('Start time entered is greater than the end time')
     } else {

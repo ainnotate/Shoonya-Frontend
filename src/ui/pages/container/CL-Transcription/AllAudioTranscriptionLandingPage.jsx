@@ -53,7 +53,7 @@ const AllAudioTranscriptionLandingPage = () => {
   const [loading, setLoading] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(-1);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [showNotes, setShowNotes] = useState(false);
   const [annotations, setAnnotations] = useState([]);
   const [stdTranscription, setStdTranscription] = useState("");

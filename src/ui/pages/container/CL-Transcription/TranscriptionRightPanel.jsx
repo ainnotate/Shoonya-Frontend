@@ -67,7 +67,7 @@ import TagsSuggestionList from "../../component/CL-Transcription/TagsSuggestionL
 // import SettingsButtonComponent from "./components/SettingsButtonComponent";
 
 //APIs
-import { setSubtitles } from "../../../../redux/actions/Common";
+import { setSubtitles, setCurrentIndex } from "../../../../redux/actions/Common";
 import C from "../../../../redux/constants";
 import SettingsButtonComponent from "../../component/CL-Transcription/SettingsButtonComponent";
 import SaveTranscriptAPI from "../../../../redux/actions/CL-Transcription/SaveTranscript";
@@ -536,6 +536,15 @@ const TranscriptionRightPanel = ({
         },
       ]);
       setRedoStack([]);
+
+      dispatch(setCurrentIndex(index+1, C.CURRENT_INDEX));
+      setTimeout(() => {
+        const subtitleScrollEle = document.getElementById("subTitleContainer");
+        subtitleScrollEle
+          ?.querySelector(`#sub_${index+1}`)
+          ?.scrollIntoView({ block: "center", behavior: "smooth" });
+      }, 50);
+
     },
     // eslint-disable-next-line
     [limit, currentOffset]

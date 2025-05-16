@@ -6,3 +6,4 @@
 	3. Always scroll to center
 	4. Stop playback exactly on time (currently going little extra)
 	5. Save locks/view status to session storage
+	6. When a new subtitle is created - make it the current index

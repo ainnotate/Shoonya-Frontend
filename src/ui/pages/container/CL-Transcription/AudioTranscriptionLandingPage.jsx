@@ -513,7 +513,7 @@ const AudioTranscriptionLandingPage = () => {
       (item) => item?.startTime <= currentTime && item?.endTime > currentTime
     );
 
-    dispatch(setCurrentIndex(currentIndex, C.CURRENT_INDEX)); // Use your actual action and constant
+//    dispatch(setCurrentIndex(currentIndex, C.CURRENT_INDEX)); // Use your actual action and constant
 
   }, [currentTime, result]);
 
