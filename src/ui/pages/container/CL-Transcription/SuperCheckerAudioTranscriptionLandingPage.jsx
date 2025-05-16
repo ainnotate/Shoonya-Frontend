@@ -815,7 +815,7 @@ const SuperCheckerAudioTranscriptionLandingPage = () => {
   const [padding, setPadding] = useState(1);
   // const [pixelRatio, setPixelRatio] = useState(window.devicePixelRatio + 1);
   const [pixelRatio, setPixelRatio] = useState(Number(Math.ceil(window.devicePixelRatio)))
-  const [waveScale, setWaveScale] = useState(1);
+  const [waveScale, setWaveScale] = useState(0.3);
   const [waveSize, setWaveSize] = useState(1);
   const [wavWorker, setWavWorker] = useState(true);
 

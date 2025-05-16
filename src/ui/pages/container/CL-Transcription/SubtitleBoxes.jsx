@@ -841,7 +841,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-end",
-                    paddingBottom: ".5%"
+                    paddingBottom: "0.6%"
                   }}
                   onMouseEnter={(e) => setCursorStyle(e.currentTarget, 'not-allowed')}
                   onMouseLeave={(e) => setCursorStyle(e.currentTarget, 'default')}
@@ -906,11 +906,10 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                         : sub.speaker_id === "Speaker 0"
                         ? "0.5px solid rgb(123, 29, 0, 1)"
                         : "0.5px solid rgb(0, 0, 0, 1)",
-                    fontWeight: isCurrentSub ? "bold" : "normal",
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "flex-end",
-                    paddingBottom: ".5%"
+                    paddingBottom: "0.6%"
                       }}
                   onMouseDown={(event) => onMouseDown(sub, event)}
                   onMouseEnter={(e) => setCursorStyle(e.currentTarget, 'move')}
