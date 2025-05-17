@@ -120,6 +120,19 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     }
   }, [result]);
 
+  // NEW HELPER FUNCTION: Get visible adjacent segments
+  const getVisibleAdjacentSegments = (sub) => {
+    if (!sub || !result) return { prevVisible: null, nextVisible: null };
+    
+    const allVisibleSubs = result.filter(s => !s.hidden);
+    const visibleIndex = allVisibleSubs.indexOf(sub);
+    
+    return {
+      prevVisible: visibleIndex > 0 ? allVisibleSubs[visibleIndex - 1] : null,
+      nextVisible: visibleIndex < allVisibleSubs.length - 1 ? allVisibleSubs[visibleIndex + 1] : null
+    };
+  };
+
   const gridGap = document.body.clientWidth / render.gridNum;
   
   // Find the currently playing subtitle based on time
@@ -211,14 +224,39 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
       
       // Check for valid index
       const index = hasSub(sub);
-      if (index < 0 || index >= result?.length - 1) {
+      if (index < 0) {
         console.warn("Invalid subtitle index for merge:", index);
         return;
       }
       
+      // Find the immediate next segment in the full array (whether hidden or not)
+      const nextSegmentIndex = index + 1;
+      
+      // Check if there is a next segment at all
+      if (nextSegmentIndex >= result.length) {
+        setSnackbarInfo({
+          open: true,
+          message: "No next segment available to merge with",
+          variant: "warning",
+        });
+        return;
+      }
+      
+      // Get the next segment
+      const nextSegment = result[nextSegmentIndex];
+      
+      // Check if next segment is hidden
+      if (nextSegment.hidden) {
+        setSnackbarInfo({
+          open: true,
+          message: "Cannot merge with hidden segment. Please make it visible first.",
+          variant: "warning",
+        });
+        return;
+      }
+      
       // Check if next segment is locked
-      const nextSub = result[index + 1];
-      if (nextSub && nextSub.locked) {
+      if (nextSegment.locked) {
         setSnackbarInfo({
           open: true,
           message: "Cannot merge with locked segment",
@@ -227,8 +265,54 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
         return;
       }
       
-      const res = onMerge(index);
-      dispatch(setSubtitles(res, C.SUBTITLES));
+      // Validate time values before merging
+      const startTime = typeof sub.startTime === 'number' ? sub.startTime : 
+                       (sub.start_time ? DT.t2d(sub.start_time) : null);
+      const endTime = typeof nextSegment.endTime === 'number' ? nextSegment.endTime : 
+                     (nextSegment.end_time ? DT.t2d(nextSegment.end_time) : null);
+      
+      if (startTime === null || endTime === null || 
+          !isFinite(startTime) || !isFinite(endTime) ||
+          startTime < 0 || endTime <= startTime) {
+        
+        console.error("Invalid segment time values for merge:", {
+          currentSegment: sub,
+          nextSegment,
+          startTime,
+          endTime
+        });
+        
+        setSnackbarInfo({
+          open: true,
+          message: "Cannot merge segments with invalid time values",
+          variant: "error",
+        });
+        return;
+      }
+      
+      // Calculate duration with validated times
+      const mergedDuration = DT.d2t(endTime - startTime);
+      
+      // Create new merged segment with both numeric and string properties
+      const mergedSub = {
+        ...sub,
+        text: `${sub.text} ${nextSegment.text}`.trim(),
+        // Store both string and numeric values for redundancy
+        end_time: nextSegment.end_time,
+        endTime: endTime,
+        start_time: sub.start_time,
+        startTime: startTime,
+        duration: mergedDuration
+      };
+      
+      // Create new subtitles array with the merged segment
+      const newSubs = [...result];
+      newSubs[index] = mergedSub;
+      
+      // Remove the next segment
+      newSubs.splice(nextSegmentIndex, 1);
+      
+      dispatch(setSubtitles(newSubs, C.SUBTITLES));
     },
     // eslint-disable-next-line
     [result]
@@ -302,11 +386,21 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     lastIndex = index;
     
     // Check if $subsRef.current exists and has children
-    if ($subsRef.current && $subsRef.current.children && $subsRef.current.children[lastIndex]) {
-      lastTarget = $subsRef.current.children[lastIndex];
-      lastWidth = parseFloat(lastTarget?.style.width || "0");
+    if ($subsRef.current && $subsRef.current.children) {
+      // Need to find visual index of the subtitle in the DOM
+      // This is important because hidden segments aren't rendered
+      const visibleSubs = result.filter(s => !s.hidden);
+      const visibleIndex = visibleSubs.indexOf(sub);
+      
+      if (visibleIndex >= 0 && $subsRef.current.children[visibleIndex]) {
+        lastTarget = $subsRef.current.children[visibleIndex];
+        lastWidth = parseFloat(lastTarget?.style.width || "0");
+      } else {
+        console.warn("Could not find DOM element for subtitle at visual index:", visibleIndex);
+        isDroging = false;
+      }
     } else {
-      console.warn("Could not find DOM element for subtitle at index:", lastIndex);
+      console.warn("Could not access subtitle DOM elements");
       isDroging = false;
     }
   };
@@ -329,8 +423,9 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     if (isDroging && lastTarget && lastDiffX) {
       const timeDiff = lastDiffX / gridGap / 10;
       const index = hasSub(lastSub);
-      const previou = result?.[index - 1];
-      const next = result?.[index + 1];
+      
+      // MODIFIED: Get VISIBLE adjacent segments instead of just using array indices
+      const { prevVisible, nextVisible } = getVisibleAdjacentSegments(lastSub);
 
       // Calculate the target start and end times
       const rawStartTime = lastSub.startTime + timeDiff;
@@ -339,11 +434,11 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
       // Only apply magnetic snapping if allowOverlap is false
       const startTime = allowOverlap ? rawStartTime : magnetically(
         rawStartTime,
-        previou ? previou.endTime : null
+        prevVisible ? prevVisible.endTime : null
       );
       const endTime = allowOverlap ? rawEndTime : magnetically(
         rawEndTime,
-        next ? next.startTime : null
+        nextVisible ? nextVisible.startTime : null
       );
       
       const width = (endTime - startTime) * 10 * gridGap;
@@ -359,12 +454,12 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
           if (allowOverlap) {
             updateSub(lastSub, { start_time });
           } else {
-            // Original logic for preventing overlap
-            if (index > 0 && startTime >= DT.t2d(previou.end_time)) {
+            // Check against VISIBLE previous segment
+            if (prevVisible && startTime >= prevVisible.endTime) {
               updateSub(lastSub, { start_time });
             }
 
-            if (index === 0) {
+            if (!prevVisible) {
               updateSub(lastSub, { start_time });
             }
           }
@@ -380,12 +475,12 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
           if (allowOverlap) {
             updateSub(lastSub, { end_time });
           } else {
-            // Original logic for preventing overlap
-            if (index >= 0 && index !== result?.length - 1 && endTime <= DT.t2d(next.start_time)) {
+            // Check against VISIBLE next segment
+            if (nextVisible && endTime <= nextVisible.startTime) {
               updateSub(lastSub, { end_time });
             }
             
-            if (index === result?.length - 1) {
+            if (!nextVisible) {
               updateSub(lastSub, { end_time });
             }
           }
@@ -406,12 +501,15 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
               end_time,
             });
           } else {
-            // Original logic for preventing overlap
-            if (result?.length > 1) {
+            // Check if there are any visible segments
+            const visibleSubs = result.filter(s => !s.hidden);
+            
+            if (visibleSubs.length > 1) {
+              // Check against VISIBLE adjacent segments
               if (
-                index > 0 && index !== result?.length - 1 &&
-                startTime >= DT.t2d(previou?.end_time) &&
-                endTime <= DT.t2d(next?.start_time)
+                prevVisible && nextVisible &&
+                startTime >= prevVisible.endTime &&
+                endTime <= nextVisible.startTime
               ) {
                 updateSub(lastSub, {
                   start_time,
@@ -419,13 +517,16 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                 });
               }
 
-              if (index === 0 && endTime <= DT.t2d(next.start_time)) {
+              // First visible segment
+              if (!prevVisible && nextVisible && endTime <= nextVisible.startTime) {
                 updateSub(lastSub, {
                   start_time,
                   end_time,
                 });
               }
-              if (index === result?.length - 1 && startTime >= DT.t2d(previou?.end_time)) {
+              
+              // Last visible segment
+              if (prevVisible && !nextVisible && startTime >= prevVisible.endTime) {
                 updateSub(lastSub, {
                   start_time,
                   end_time,
@@ -433,6 +534,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
               }
             }
             else {
+              // Only one visible segment, so no constraints
               updateSub(lastSub, {
                 start_time,
                 end_time,
@@ -536,6 +638,8 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     }
     
     try {
+      let startSeconds, endSeconds;
+      
       // For locked segments, use string times directly to avoid issues with getters
       if (sub.locked) {
         // Check if start_time and end_time exist
@@ -543,20 +647,42 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
           throw new Error("Missing time values");
         }
         
-        const startSeconds = DT.t2d(sub.start_time);
-        const endSeconds = DT.t2d(sub.end_time);
-        
-        if (!isFinite(startSeconds) || !isFinite(endSeconds)) {
-          throw new Error("Invalid time values");
-        }
-        
-        playUntil = endSeconds;
-        player.currentTime = startSeconds;
+        startSeconds = DT.t2d(sub.start_time);
+        endSeconds = DT.t2d(sub.end_time);
       } else {
-        // For regular segments, use the getters
-        playUntil = sub.endTime;
-        player.currentTime = sub.startTime;
+        // For regular segments, use the getters but validate them
+        startSeconds = typeof sub.startTime === 'number' ? sub.startTime : 
+                      (sub.start_time ? DT.t2d(sub.start_time) : null);
+        endSeconds = typeof sub.endTime === 'number' ? sub.endTime : 
+                    (sub.end_time ? DT.t2d(sub.end_time) : null);
       }
+      
+      // Validate time values
+      if (startSeconds === null || endSeconds === null || 
+          !isFinite(startSeconds) || !isFinite(endSeconds) || 
+          startSeconds < 0 || endSeconds <= startSeconds) {
+        
+        // Log diagnostic info to help debug
+        console.error("Invalid segment time values:", { 
+          sub,
+          startSeconds, 
+          endSeconds,
+          startTimeType: typeof sub.startTime,
+          endTimeType: typeof sub.endTime,
+          start_time: sub.start_time,
+          end_time: sub.end_time
+        });
+        
+        throw new Error("Invalid time values detected");
+      }
+      
+      // Additional safety: ensure times are within valid media range
+      startSeconds = Math.max(0, Math.min(startSeconds, player.duration || Number.MAX_VALUE));
+      endSeconds = Math.min(endSeconds, player.duration || Number.MAX_VALUE);
+      
+      // Set the playback parameters
+      playUntil = endSeconds;
+      player.currentTime = startSeconds;
       
       player.play();
       player.addEventListener("timeupdate", onTimeUpdate);
@@ -684,7 +810,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
           Delete Subtitle
         </MenuItem>
         
-        {lastSub && result && result.length > 0 && result.indexOf(lastSub) < result.length - 1 && (
+        {lastSub && (
           <MenuItem
             className={`${classes.menuItem} ${!lastSub || (lastSub && lastSub.locked) ? 'menu-item-disabled' : 'menu-item-hover'}`}
             onClick={() => {
@@ -750,8 +876,6 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
     );
   });
 
-
-
   return (
     <div className={classes.parentSubtitleBox} ref={$blockRef}>
       {renderSnackBar()}
@@ -792,7 +916,7 @@ function SubtitleBoxes({ render, currentTime, duration, allowOverlap = true, onT
                 const originalIndex = result.indexOf(sub);
                 if (originalIndex !== -1) {
                   // Use dispatch to update the global state for currentIndex
-                  dispatch(setCurrentIndex(originalIndex, C.CURRENT_INDEX)); // Use your actual action and constant
+                  dispatch(setCurrentIndex(originalIndex, C.CURRENT_INDEX));
                   
                   // Optional: Scroll to the corresponding subtitle in the right panel
                   setTimeout(() => {
